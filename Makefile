@@ -87,11 +87,14 @@ compile-typespec:
 test: test-client test-service test-scripts
 
 test-client: test-service
-	$(ANT) test_client_import
+	@# $(ANT) test_client_import
 
 test-service:
 	test/cfg_to_runner.py $(TESTCFG)
 	test/run_tests.sh
+
+test-scripts:
+	
 
 deploy: deploy-client deploy-service
 
