@@ -82,11 +82,14 @@ SimpleConverter is a reference to a hash where the following keys are defined:
 	description has a value which is a string
 	accepted_input_types has a value which is a reference to a list where each element is a KBaseTypedObjConverter.Type
 	output_type has a value which is a KBaseTypedObjConverter.Type
-	mapper has a value which is a string
+	operations has a value which is a reference to a list where each element is a KBaseTypedObjConverter.Operation
 Type is a reference to a hash where the following keys are defined:
 	mod has a value which is a string
 	name has a value which is a string
 	ver has a value which is a string
+Operation is a reference to a hash where the following keys are defined:
+	operation has a value which is a string
+	spec has a value which is an UnspecifiedObject, which can hold any non-null object
 ConverterValidationReport is a reference to a hash where the following keys are defined:
 	is_valid has a value which is a KBaseTypedObjConverter.bool
 	errors has a value which is a reference to a list where each element is a string
@@ -105,11 +108,14 @@ SimpleConverter is a reference to a hash where the following keys are defined:
 	description has a value which is a string
 	accepted_input_types has a value which is a reference to a list where each element is a KBaseTypedObjConverter.Type
 	output_type has a value which is a KBaseTypedObjConverter.Type
-	mapper has a value which is a string
+	operations has a value which is a reference to a list where each element is a KBaseTypedObjConverter.Operation
 Type is a reference to a hash where the following keys are defined:
 	mod has a value which is a string
 	name has a value which is a string
 	ver has a value which is a string
+Operation is a reference to a hash where the following keys are defined:
+	operation has a value which is a string
+	spec has a value which is an UnspecifiedObject, which can hold any non-null object
 ConverterValidationReport is a reference to a hash where the following keys are defined:
 	is_valid has a value which is a KBaseTypedObjConverter.bool
 	errors has a value which is a reference to a list where each element is a string
@@ -192,11 +198,14 @@ SimpleConverter is a reference to a hash where the following keys are defined:
 	description has a value which is a string
 	accepted_input_types has a value which is a reference to a list where each element is a KBaseTypedObjConverter.Type
 	output_type has a value which is a KBaseTypedObjConverter.Type
-	mapper has a value which is a string
+	operations has a value which is a reference to a list where each element is a KBaseTypedObjConverter.Operation
 Type is a reference to a hash where the following keys are defined:
 	mod has a value which is a string
 	name has a value which is a string
 	ver has a value which is a string
+Operation is a reference to a hash where the following keys are defined:
+	operation has a value which is a string
+	spec has a value which is an UnspecifiedObject, which can hold any non-null object
 Workspace.ObjectIdentity is a reference to a hash where the following keys are defined:
 	workspace has a value which is a Workspace.ws_name
 	wsid has a value which is a Workspace.ws_id
@@ -241,11 +250,14 @@ SimpleConverter is a reference to a hash where the following keys are defined:
 	description has a value which is a string
 	accepted_input_types has a value which is a reference to a list where each element is a KBaseTypedObjConverter.Type
 	output_type has a value which is a KBaseTypedObjConverter.Type
-	mapper has a value which is a string
+	operations has a value which is a reference to a list where each element is a KBaseTypedObjConverter.Operation
 Type is a reference to a hash where the following keys are defined:
 	mod has a value which is a string
 	name has a value which is a string
 	ver has a value which is a string
+Operation is a reference to a hash where the following keys are defined:
+	operation has a value which is a string
+	spec has a value which is an UnspecifiedObject, which can hold any non-null object
 Workspace.ObjectIdentity is a reference to a hash where the following keys are defined:
 	workspace has a value which is a Workspace.ws_name
 	wsid has a value which is a Workspace.ws_id
@@ -335,9 +347,9 @@ sub save_simple_converter
 
 
 
-=head2 simple_convert
+=head2 convert_simple
 
-  $return = $obj->simple_convert($params)
+  $return = $obj->convert_simple($params)
 
 =over 4
 
@@ -437,7 +449,7 @@ Workspace.usermeta is a reference to a hash where the key is a string and the va
 
 =cut
 
-sub simple_convert
+sub convert_simple
 {
     my($self, @args) = @_;
 
@@ -446,7 +458,7 @@ sub simple_convert
     if ((my $n = @args) != 1)
     {
 	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
-							       "Invalid argument count for function simple_convert (received $n, expecting 1)");
+							       "Invalid argument count for function convert_simple (received $n, expecting 1)");
     }
     {
 	my($params) = @args;
@@ -454,30 +466,30 @@ sub simple_convert
 	my @_bad_arguments;
         (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"params\" (value was \"$params\")");
         if (@_bad_arguments) {
-	    my $msg = "Invalid arguments passed to simple_convert:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	    my $msg = "Invalid arguments passed to convert_simple:\n" . join("", map { "\t$_\n" } @_bad_arguments);
 	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
-								   method_name => 'simple_convert');
+								   method_name => 'convert_simple');
 	}
     }
 
     my $result = $self->{client}->call($self->{url}, {
-	method => "KBaseTypedObjConverter.simple_convert",
+	method => "KBaseTypedObjConverter.convert_simple",
 	params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
 	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
 					       code => $result->content->{error}->{code},
-					       method_name => 'simple_convert',
+					       method_name => 'convert_simple',
 					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
 					      );
 	} else {
 	    return wantarray ? @{$result->result} : $result->result->[0];
 	}
     } else {
-        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method simple_convert",
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method convert_simple",
 					    status_line => $self->{client}->status_line,
-					    method_name => 'simple_convert',
+					    method_name => 'convert_simple',
 				       );
     }
 }
@@ -495,16 +507,16 @@ sub version {
             Bio::KBase::Exceptions::JSONRPC->throw(
                 error => $result->error_message,
                 code => $result->content->{code},
-                method_name => 'simple_convert',
+                method_name => 'convert_simple',
             );
         } else {
             return wantarray ? @{$result->result} : $result->result->[0];
         }
     } else {
         Bio::KBase::Exceptions::HTTP->throw(
-            error => "Error invoking method simple_convert",
+            error => "Error invoking method convert_simple",
             status_line => $self->{client}->status_line,
-            method_name => 'simple_convert',
+            method_name => 'convert_simple',
         );
     }
 }
@@ -572,7 +584,7 @@ an int
 
 
 
-=head2 type_mapper
+=head2 Operation
 
 =over 4
 
@@ -583,14 +595,20 @@ an int
 =begin html
 
 <pre>
-a string
+a reference to a hash where the following keys are defined:
+operation has a value which is a string
+spec has a value which is an UnspecifiedObject, which can hold any non-null object
+
 </pre>
 
 =end html
 
 =begin text
 
-a string
+a reference to a hash where the following keys are defined:
+operation has a value which is a string
+spec has a value which is an UnspecifiedObject, which can hold any non-null object
+
 
 =end text
 
@@ -648,7 +666,7 @@ long_name has a value which is a string
 description has a value which is a string
 accepted_input_types has a value which is a reference to a list where each element is a KBaseTypedObjConverter.Type
 output_type has a value which is a KBaseTypedObjConverter.Type
-mapper has a value which is a string
+operations has a value which is a reference to a list where each element is a KBaseTypedObjConverter.Operation
 
 </pre>
 
@@ -661,7 +679,7 @@ long_name has a value which is a string
 description has a value which is a string
 accepted_input_types has a value which is a reference to a list where each element is a KBaseTypedObjConverter.Type
 output_type has a value which is a KBaseTypedObjConverter.Type
-mapper has a value which is a string
+operations has a value which is a reference to a list where each element is a KBaseTypedObjConverter.Operation
 
 
 =end text
@@ -706,6 +724,15 @@ errors has a value which is a reference to a list where each element is a string
 
 =over 4
 
+
+
+=item Description
+
+Specify an input typed data object to convert, the output destination of the converted object, and
+the simple converter to use.  Optionally specify a Workspace endpoint.  If a workspace_url is not
+provided, then the configured Workspace url is used, which will generally be the production endpoint
+if this service is deployed to production, or the dev endpoint if this service is deployed to dev.
+@optional workspace_url
 
 
 =item Definition

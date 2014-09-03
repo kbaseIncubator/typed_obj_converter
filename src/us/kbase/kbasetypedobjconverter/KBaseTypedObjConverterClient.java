@@ -197,7 +197,7 @@ public class KBaseTypedObjConverterClient {
     }
 
     /**
-     * <p>Original spec-file function name: simple_convert</p>
+     * <p>Original spec-file function name: convert_simple</p>
      * <pre>
      * </pre>
      * @param   params   instance of type {@link us.kbase.kbasetypedobjconverter.SimpleConvertParams SimpleConvertParams}
@@ -205,11 +205,11 @@ public class KBaseTypedObjConverterClient {
      * @throws IOException if an IO exception occurs
      * @throws JsonClientException if a JSON RPC exception occurs
      */
-    public Tuple11<Long, String, String, String, Long, String, Long, String, String, Long, Map<String,String>> simpleConvert(SimpleConvertParams params) throws IOException, JsonClientException {
+    public Tuple11<Long, String, String, String, Long, String, Long, String, String, Long, Map<String,String>> convertSimple(SimpleConvertParams params) throws IOException, JsonClientException {
         List<Object> args = new ArrayList<Object>();
         args.add(params);
         TypeReference<List<Tuple11<Long, String, String, String, Long, String, Long, String, String, Long, Map<String,String>>>> retType = new TypeReference<List<Tuple11<Long, String, String, String, Long, String, Long, String, String, Long, Map<String,String>>>>() {};
-        List<Tuple11<Long, String, String, String, Long, String, Long, String, String, Long, Map<String,String>>> res = caller.jsonrpcCall("KBaseTypedObjConverter.simple_convert", args, retType, true, true);
+        List<Tuple11<Long, String, String, String, Long, String, Long, String, String, Long, Map<String,String>>> res = caller.jsonrpcCall("KBaseTypedObjConverter.convert_simple", args, retType, true, true);
         return res.get(0);
     }
 }

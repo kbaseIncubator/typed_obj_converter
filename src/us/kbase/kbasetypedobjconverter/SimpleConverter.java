@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "description",
     "accepted_input_types",
     "output_type",
-    "mapper"
+    "operations"
 })
 public class SimpleConverter {
 
@@ -41,8 +41,8 @@ public class SimpleConverter {
      */
     @JsonProperty("output_type")
     private us.kbase.kbasetypedobjconverter.Type outputType;
-    @JsonProperty("mapper")
-    private String mapper;
+    @JsonProperty("operations")
+    private List<Operation> operations;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("long_name")
@@ -115,18 +115,18 @@ public class SimpleConverter {
         return this;
     }
 
-    @JsonProperty("mapper")
-    public String getMapper() {
-        return mapper;
+    @JsonProperty("operations")
+    public List<Operation> getOperations() {
+        return operations;
     }
 
-    @JsonProperty("mapper")
-    public void setMapper(String mapper) {
-        this.mapper = mapper;
+    @JsonProperty("operations")
+    public void setOperations(List<Operation> operations) {
+        this.operations = operations;
     }
 
-    public SimpleConverter withMapper(String mapper) {
-        this.mapper = mapper;
+    public SimpleConverter withOperations(List<Operation> operations) {
+        this.operations = operations;
         return this;
     }
 
@@ -142,7 +142,7 @@ public class SimpleConverter {
 
     @Override
     public String toString() {
-        return ((((((((((((("SimpleConverter"+" [longName=")+ longName)+", description=")+ description)+", acceptedInputTypes=")+ acceptedInputTypes)+", outputType=")+ outputType)+", mapper=")+ mapper)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((((((("SimpleConverter"+" [longName=")+ longName)+", description=")+ description)+", acceptedInputTypes=")+ acceptedInputTypes)+", outputType=")+ outputType)+", operations=")+ operations)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

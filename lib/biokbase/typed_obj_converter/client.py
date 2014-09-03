@@ -175,7 +175,7 @@ class KBaseTypedObjConverter(object):
                           [c, target])
         return resp[0]
 
-    def simple_convert(self, params):
-        resp = self._call('KBaseTypedObjConverter.simple_convert',
+    def convert_simple(self, params):
+        resp = self._call('KBaseTypedObjConverter.convert_simple',
                           [params])
         return resp[0]

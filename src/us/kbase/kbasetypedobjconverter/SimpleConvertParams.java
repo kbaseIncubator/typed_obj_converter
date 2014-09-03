@@ -14,7 +14,13 @@ import us.kbase.workspace.ObjectIdentity;
 
 /**
  * <p>Original spec-file type: SimpleConvertParams</p>
- * 
+ * <pre>
+ * Specify an input typed data object to convert, the output destination of the converted object, and
+ * the simple converter to use.  Optionally specify a Workspace endpoint.  If a workspace_url is not
+ * provided, then the configured Workspace url is used, which will generally be the production endpoint
+ * if this service is deployed to production, or the dev endpoint if this service is deployed to dev.
+ * @optional workspace_url
+ * </pre>
  * 
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)

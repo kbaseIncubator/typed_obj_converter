@@ -10,7 +10,10 @@ module KBaseTypedObjConverter {
     typedef int bool;
 
     /*  */
-    typedef string type_mapper;
+    typedef structure {
+    	string operation;
+    	UnspecifiedObject spec;
+    } Operation;
 
     /*  */
     typedef structure {
@@ -25,7 +28,7 @@ module KBaseTypedObjConverter {
         string description;
         list <Type> accepted_input_types;
         Type output_type;
-        string mapper;
+        list <Operation> operations;
     } SimpleConverter;
     
     
@@ -38,13 +41,19 @@ module KBaseTypedObjConverter {
     /*  */
     funcdef validate_simple_converter(SimpleConverter c) returns (ConverterValidationReport report);
     
-    
-    
     /*  */
     funcdef save_simple_converter(SimpleConverter c, Workspace.ObjectIdentity target) returns (Workspace.object_info) authentication required;
     
     
-    /* */
+    
+    
+    /*
+        Specify an input typed data object to convert, the output destination of the converted object, and
+        the simple converter to use.  Optionally specify a Workspace endpoint.  If a workspace_url is not
+        provided, then the configured Workspace url is used, which will generally be the production endpoint
+        if this service is deployed to production, or the dev endpoint if this service is deployed to dev.
+        @optional workspace_url
+    */
     typedef structure {
         Workspace.ObjectIdentity input;
         Workspace.ObjectIdentity output;
@@ -53,19 +62,28 @@ module KBaseTypedObjConverter {
     } SimpleConvertParams;
 
     /*  */
-    funcdef simple_convert(SimpleConvertParams params) returns (Workspace.object_info) authentication required;
+    funcdef convert_simple(SimpleConvertParams params) returns (Workspace.object_info) authentication required;
     
     
-    
-    
-    
-    
+
     
     
     
     
     /*
     PROTOTYPES ....
+    
+    typedef structure {
+        string name;
+        string version;
+        string description;
+        
+    } BuiltInConverterInfo;
+    
+    
+    funcdef convert() returns (list<Workspace.object_info>) authentication required;
+    
+    
     typedef structure {
         string 
     
