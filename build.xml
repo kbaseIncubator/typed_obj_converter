@@ -4,6 +4,7 @@
       Build file for the Typed Object Converter Service
   </description>
 
+
   <!-- set global properties for this build -->
   <property name="package" value="typed object converter service"/>
   <property name="src" location="src"/>
@@ -18,6 +19,9 @@
   <property name="war.file" value="TypedObjConverterService.war"/>
   <property name="clientjar.file" value="TypedObjConverterClient.jar"/>
   <property name="war.dir" value="war"/>
+
+  <property name="bin" value="bin"/>
+  <property name="binjar.file" value="toc-convert.jar"/>
 
   <property environment="env"/>
   <condition property="jardir" value="../jars/lib/jars/">
@@ -68,6 +72,9 @@
     <include name="kbase/workspace/WorkspaceClient-0.2.0.jar"/>
     <include name="bazaarvoice/jolt/jolt-core-0.0.13.jar"/>
     <include name="apache_commons/commons-cli-1.2.jar"/>
+    <include name="apache_commons/commons-lang-2.4.jar"/>
+    <include name="apache_commons/commons-logging-1.1.1.jar"/>
+    <include name="apache_commons/commons-configuration-1.10.jar"/>
   </fileset>
 	
   <union id="serverside">
@@ -116,10 +123,24 @@
     <fileset file="${dist}/${jar.file}"/>
   </path>
 
+  <pathconvert property="bin.classpath" pathsep=" ">
+    <path refid="compile.classpath"/>
+      <mapper>
+        <chainedmapper>
+          <flattenmapper/>
+          <globmapper from="*.jar" to="${bin.dir}/lib/*.jar"/>
+        </chainedmapper>
+      </mapper>
+  </pathconvert>
+	
+	
+	
+	
   <target name="init" description="make directories">
     <!-- Create the output directory structure-->
     <mkdir dir="${classes}"/>
     <mkdir dir="${dist}"/>
+    <mkdir dir="${bin}"/>
   </target>
 
   <target name="compile_client" description="compile only the client">
@@ -171,6 +192,46 @@
       <lib dir="${war.dir}/lib/"/>
     </war>
     <delete dir="${war.dir}/lib"/>
+  </target>
+
+  <target name="bin" depends="compile" description="generate the executable command" >
+  
+    <!-- step 1 - copy dependencies to the bin/lib directory -->
+    <copy todir="${bin}/lib" flatten="true">
+        <union refid="serverside"/>
+    </copy>
+  	
+    <!-- step 2 - specify what should be bundled bundled jar -->
+    <pathconvert property="bin.classpath" pathsep=" ">
+      <path refid="compile.classpath"/>
+        <mapper>
+          <chainedmapper>
+            <flattenmapper/>
+            <globmapper from="*.jar" to="${bin.dir}/lib/*.jar"/>
+          </chainedmapper>
+        </mapper>
+    </pathconvert>
+  
+    <!-- step 3 - build the bundled jar of external libs -->
+    <jar destfile="${bin}/lib/all-external-libs.jar">
+      <zipgroupfileset dir="${bin}/lib">
+        <include name="**/*.jar"/>
+      </zipgroupfileset>
+    </jar>
+    <sleep seconds="1" />
+
+    <!-- step 4 - build the bundled executable jar of external libs -->
+    <jar destfile="${bin}/${binjar.file}" filesetmanifest="skip">
+        <zipfileset src="${bin}/lib/all-external-libs.jar">
+           <exclude name="*"/>
+           <exclude name="**/*.java"/>
+        </zipfileset>
+        <zipgroupfileset dir="dist" includes="TypedObjConverter.jar" excludes="**/*.java"/>
+        <manifest>
+            <attribute name="Main-Class" value="us.kbase.toc.scripts.TocConvert"/>
+            <attribute name="Class-Path" value="${mf.classpath}"/>
+        </manifest>
+    </jar>
   </target>
 
   <target name="javadoc" description="build javadocs">

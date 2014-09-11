@@ -1,7 +1,10 @@
 package us.kbase.toc.scripts;
 
+import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -11,12 +14,21 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.apache.commons.configuration.ConfigurationException;
+
+import us.kbase.auth.AuthToken;
+import us.kbase.auth.TokenFormatException;
+import us.kbase.common.service.UnauthorizedException;
+import us.kbase.toc.SimpleTypedObjectConverter;
+import us.kbase.toc.exceptions.TypedObjectConversionException;
+import us.kbase.toc.ws.WorkspaceManager;
+import us.kbase.workspace.ObjectIdentity;
 
 public class TocConvert {
 
 	private static final String CMD_NAME = "toc-convert";
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws TokenFormatException, UnauthorizedException, MalformedURLException, IOException, TypedObjectConversionException {
 		
 		// first parse options
 		Options options = setupOptions();
@@ -30,13 +42,42 @@ public class TocConvert {
 			System.exit(1);
 		}
 		
-		// check for usage
+		// if we didn't get anything, that's an error
+		if(cmd.getOptions().length==0) {
+			System.err.println("No options given.  Run with -h or --help for usage information.");
+			System.exit(1);
+		}
+		
+		// check for a help message
 		if(cmd.hasOption("h")) { 
 			printHelp(options, System.out);
 			System.exit(0);
 		}
 		
-		// do the conversion...
+		// check if we are logged in
+		KBaseConfig kbconfig = null;
+		try {
+			kbconfig = new KBaseConfig();
+		} catch (ConfigurationException e) {
+			System.err.println("Unable to get KBase client config.  Are you logged in with kb-login?");
+			System.err.println(e.getMessage());
+			System.exit(0);
+		}
+		
+		if(!kbconfig.isLoggedIn()) {
+			System.err.println("You must be logged in to convert data objects.  Use kbase-login.");
+			System.exit(1);
+		}
+		WorkspaceManager wm = new WorkspaceManager(
+										new URL("https://kbase.us/services/ws"),
+										new AuthToken(kbconfig.getToken())
+									);
+		SimpleTypedObjectConverter stoc = new SimpleTypedObjectConverter(wm);
+		ObjectIdentity data = new ObjectIdentity().withRef(cmd.getOptionValue("i"));
+		System.out.println(data);
+		ObjectIdentity converter = new ObjectIdentity().withRef(cmd.getOptionValue("c"));
+		System.out.println(converter);
+		stoc.convert(data, converter);
 		
 		
 	}
@@ -86,6 +127,13 @@ public class TocConvert {
 				.create("c");
 		//converter.setRequired(true);
 		options.addOption(converter);
+		
+		Option runlocal   = OptionBuilder
+				.hasArg(false)
+				.withDescription("do the conversion locally")
+				.withLongOpt("local")
+				.create("l");
+		options.addOption(runlocal);
 		
 		return options;
 	}

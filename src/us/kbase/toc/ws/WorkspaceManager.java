@@ -24,7 +24,7 @@ public class WorkspaceManager {
 		ws = new WorkspaceClient(url,token);
 	}
 	
-	public List<ObjectInfoWrapper> getObjInfo(List<ObjectIdentity> objIds, AuthToken authPart)
+	public List<ObjectInfoWrapper> getObjInfo(List<ObjectIdentity> objIds)
 			throws IOException, JsonClientException {
 		GetObjectInfoNewParams goip = new GetObjectInfoNewParams()
 											.withObjects(objIds)
@@ -40,8 +40,8 @@ public class WorkspaceManager {
 	}
 	
 	
-	public List<ObjectData> getData() {
-		return null;
+	public List<ObjectData> getObjects(List<ObjectIdentity> objIds) throws IOException, JsonClientException {
+		return ws.getObjects(objIds);
 	}
 	
 	
